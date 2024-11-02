@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body
+{
+    /* prevent scrolling */
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+
+    /* prevent text selection */
+    -webkit-user-select: non !important; /* Safari */
+    -webkit-touch-callout: none !important;
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+
+    /* prevent zooming */
+    touch-action: pan-x pan-y;
+}
+
+#feedback, #taparea, #indicator
+{
+    /* prevent text selection */
+    -webkit-user-select: none !important; /* Safari */
+    -webkit-touch-callout: none !important;
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+.light-shadow
+{
+    box-shadow: 0 0 30px rgba(255, 70, 70, 0.9);
+}
