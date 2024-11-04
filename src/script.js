@@ -1,5 +1,7 @@
 $(document).ready(function()
 {
+    // required constants and variables
+
     const urlParams = new URLSearchParams(window.location.search); // get URL parameters
     const debugFlag = urlParams.get("debug") === "true" ? true : false; // flag to shorten test duration for debugging; call by including ?debug=true in URL
 
@@ -38,21 +40,23 @@ $(document).ready(function()
     const formsg_misses = "670ceebd595272bb070eba3c";
     const formsg_reactionTimes = "67261a890895c76e497ac73c";
 
-    // show tutorial modal
+
+    // show tutorial modal on page load
     const tutorialModal = new bootstrap.Modal("#tutorialModal");
     tutorialModal.show();
 
 
+    // handler for user click on start button
     $("#start").click(function()
     {
         // hide start button and feedback text
         $("#start, #feedback").addClass("tw-hidden");
 
-        // start function
+        // start test
         startTest()
     });
 
-    // start test
+    // function to start test
     function startTest()
     {
         
@@ -75,12 +79,13 @@ $(document).ready(function()
         lightTimeoutId = setTimeout(showLight, lightDelay);
     }
 
+    // function to stop test
     function stopTest()
     {
         // set flag
         isTestStarted = false;
 
-        // clear timeouts
+        // clear timeouts to stop them from firing
         clearTimeout(lightTimeoutId);
         clearTimeout(missTimeoutId);
         clearTimeout(hideFeedbackId);
@@ -126,6 +131,7 @@ $(document).ready(function()
         setTimeout(() => resultsModal.show(), 1000);
     }
 
+    // function to display the indicator light
     function showLight()
     {
         // physically show light
@@ -142,6 +148,7 @@ $(document).ready(function()
         missTimeoutId = setTimeout(missLight, maxResponseTime);
     }
 
+    // handler for when user misses the light
     function missLight()
     {
         // user waited for too long and missed the light
@@ -151,7 +158,7 @@ $(document).ready(function()
         resetLight();
     }
 
-
+    // function to reset the indicator light and prime it to reappear again
     function resetLight()
     {
         // stop light from showing
@@ -186,7 +193,7 @@ $(document).ready(function()
         }
     }
 
-    // handle clicking in #taparea
+    // handler for user click in #taparea
     $("#taparea").click(function(e)
     {
         // prevent default functionality (e.g. highlighting)
@@ -210,7 +217,7 @@ $(document).ready(function()
             return;
         }
 
-        if (isLightOn) // user tapped when light is on
+        if (isLightOn) // user tapped when light is on = positive hit
         {
             tapTime = getCurrentTime(); // setTapTime to current time
             currentDelay = tapTime - lightShownTime; // calculate time in ms taken to tap after light is shown
@@ -220,14 +227,13 @@ $(document).ready(function()
 
             // push result to array
             reactionTimes.push(currentDelay);
-
             console.log(currentDelay);
 
             // reset light
             resetLight();
         }
 
-        else // user tapped when light is not on
+        else // user tapped when light is not on = false start
         {
             // increment falseStarts
             falseStarts += 1;
@@ -241,8 +247,7 @@ $(document).ready(function()
         }
     });
 
-
-    // helper function to get current timestamp
+    // helper function to get current date and time as a unix timestamp
     function getCurrentTime()
     {
         return Date.now();
@@ -268,7 +273,7 @@ $(document).ready(function()
         $("#feedback").html("");
     }
 
-    // helper function to show final feedback
+    // helper function to show final feedback without re-hiding it
     function showFinalFeedback()
     {
         showFeedback("DONE", false);
