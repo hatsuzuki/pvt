@@ -45,6 +45,11 @@ $(document).ready(function()
     const tutorialModal = new bootstrap.Modal("#tutorialModal");
     tutorialModal.show();
 
+    // show debug text in tap area on page load if debugFlag is true
+    if (debugFlag)
+    {
+        $("#taparea > h4").html("DEBUG MODE");
+    }
 
     // handler for user click on start button
     $("#start").click(function()
