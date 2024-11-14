@@ -5,7 +5,7 @@ $(document).ready(function()
     const urlParams = new URLSearchParams(window.location.search); // get URL parameters
     const debugFlag = urlParams.get("debug") === "true" ? true : false; // flag to shorten test duration for debugging; call by including ?debug=true in URL
 
-    const testDuration = debugFlag ? 0.3 : 5; // test duration minutes (default is 5 minutes; shortened to 0.3 minutes if debugFlag == true)
+    const testDuration = debugFlag ? 0.3 : 3; // test duration minutes (default is 3 minutes; shortened to 0.3 minutes if debugFlag == true)
 
     const maxResponseTime = 1500; // time in ms to wait after light turns on before treating a failure to tap as a miss
     const minDelay = 2000; // min delay in ms before light turns on
