@@ -19,7 +19,8 @@ $(document).ready(function()
     var testStopTime; // timestamp of end of test
 
     var currentDateTime = ""; // current date and time in yyyy-mm-dd HH:MM:ss format
-    var reactionTimes = []; // array of reaction times in ms
+    var reactionTimesFull = []; // array of reaction times including false starts and misses
+    var reactionTimes = []; // array of reaction times in ms (separate array to calculate average)
     var avgReactionTime = 0; // average reaction time
     var falseStarts = 0; // number of false starts (tap when light is not on)
     var misses = 0; // number of misses (no tap when light is on)
@@ -108,23 +109,25 @@ $(document).ready(function()
         avgReactionTime = Math.round(reactionTimes.reduce((sum, currentValue) => sum + currentValue, 0) / reactionTimes.length);
         
         if (isNaN(avgReactionTime)) { avgReactionTime = 0; }
-        if (reactionTimes.length == 0) { reactionTimes = "NA"; }
+
+        // we want to output reactionTimesFull (includes "FS" and "MISS") instead of reactionTimes (includes numeric reaction times only)
+        if (reactionTimesFull.length == 0) { reactionTimesFull = "NA"; }
 
         console.log(`Total test duration (s): ${Math.round((testStopTime - testStartTime) / 1000).toString()}`);
         console.log(`Average reaction time: ${avgReactionTime.toString()}`);
         console.log(`Number of false starts: ${falseStarts.toString()}`);
         console.log(`Number of misses: ${misses.toString()}`);
-        console.log(`Reaction times: ${reactionTimes.toString()}`);
+        console.log(`Reaction times: ${reactionTimesFull.toString()}`);
         console.log(`Test concluded at ${convertDate(new Date())}.`);
 
         // update results in results modal
-        $("#reaction-times-length").html(reactionTimes == "[]" ? 0 : reactionTimes.length);
+        $("#reaction-times-length").html(reactionTimes == "[]" ? 0 : reactionTimes.length); // successful taps only
         $("#avg-reaction-time").html(avgReactionTime);
         $("#false-starts").html(falseStarts);
         $("#misses").html(misses);
 
         // set formSG submission link in results modal
-        var submissionLink = `https://form.gov.sg/${formsg_formID}?${formsg_testStartTime}=${debugFlag ? currentDateTime + " (DEBUG)" : currentDateTime}&${formsg_avgReactionTime}=${avgReactionTime}&${formsg_falseStarts}=${falseStarts}&${formsg_misses}=${misses}&${formsg_reactionTimes}=${reactionTimes.toString()}`;
+        var submissionLink = `https://form.gov.sg/${formsg_formID}?${formsg_testStartTime}=${debugFlag ? currentDateTime + " (DEBUG)" : currentDateTime}&${formsg_avgReactionTime}=${avgReactionTime}&${formsg_falseStarts}=${falseStarts}&${formsg_misses}=${misses}&${formsg_reactionTimes}=${reactionTimesFull.toString()}`;
         $("#submit").attr("href", encodeURI(submissionLink));
 
         // show results modal
@@ -154,12 +157,18 @@ $(document).ready(function()
     }
 
     // handler for when user misses the light
-    function missLight()
+    function missLight() // user waited for too long and missed the light
     {
-        // user waited for too long and missed the light
+        // increment misses
         misses += 1;
+        
+        // push result to array
+        reactionTimesFull.push("MISS");
+        
+        // show feedback
         showFeedback("MISS");
         console.log(`Miss! Total misses: ${misses}`);
+
         resetLight();
     }
 
@@ -226,12 +235,13 @@ $(document).ready(function()
         {
             tapTime = getCurrentTime(); // setTapTime to current time
             currentDelay = tapTime - lightShownTime; // calculate time in ms taken to tap after light is shown
+            
+            // push result to arrays
+            reactionTimes.push(currentDelay);
+            reactionTimesFull.push(currentDelay);
 
             // show feedback
             showFeedback(currentDelay);
-
-            // push result to array
-            reactionTimes.push(currentDelay);
             console.log(currentDelay);
 
             // reset light
@@ -242,6 +252,9 @@ $(document).ready(function()
         {
             // increment falseStarts
             falseStarts += 1;
+
+            // push result to array
+            reactionTimesFull.push("FS");
 
             // show feedback
             showFeedback("FS");
